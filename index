@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Crown Cut – Barbershop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Variables ── */
+    :root {
+      --black:   #0d0d0d;
+      --surface: #161616;
+      --card:    #1e1e1e;
+      --border:  #2a2a2a;
+      --gold:    #c9a84c;
+      --gold-lt: #e4c678;
+      --text:    #e8e0d0;
+      --muted:   #7a7065;
+      --error:   #e05c5c;
+      --success: #5cbe8a;
+      --radius:  6px;
+      --ease:    cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--black);
+      color: var(--text);
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* ── Header / Hero ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    header .container { display: flex; align-items: center; justify-content: space-between; }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-left: 28px;
+      transition: color .25s var(--ease);
+    }
+    nav a:hover { color: var(--gold); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+      position: relative;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(201,168,76,.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 5px 14px;
+      border-radius: 2px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 6vw, 4.6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.01em;
+      margin-bottom: 22px;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero p {
+      max-width: 480px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+    .hero-cta {
+      margin-top: 40px;
+      display: inline-block;
+      background: var(--gold);
+      color: var(--black);
+      font-weight: 500;
+      font-size: .85rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 14px 36px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: background .25s var(--ease), transform .2s var(--ease);
+    }
+    .hero-cta:hover { background: var(--gold-lt); transform: translateY(-2px); }
+
+    /* ── Section titles ── */
+    .section-header { text-align: center; margin-bottom: 56px; }
+    .section-header .eyebrow {
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 700;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 48px; height: 2px;
+      background: var(--gold);
+      margin: 16px auto 0;
+    }
+
+    /* ── Services ── */
+    #services { padding: 90px 0; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      transition: border-color .3s var(--ease), transform .3s var(--ease);
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .3s var(--ease);
+    }
+    .service-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon {
+      font-size: 2.2rem;
+      margin-bottom: 18px;
+    }
+    .service-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+    }
+    .service-card p { color: var(--muted); font-size: .9rem; line-height: 1.7; margin-bottom: 20px; }
+    .service-price {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--gold);
+    }
+    .service-price span { font-size: .8rem; color: var(--muted); font-weight: 300; margin-left: 4px; }
+
+    /* ── Booking Section ── */
+    #booking { padding: 90px 0 110px; }
+    .booking-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 56px 48px;
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .booking-wrap::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 60px; right: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    /* ── Form ── */
+    .form-row { display: grid; gap: 20px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .field label {
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field input,
+    .field select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-size: .95rem;
+      font-weight: 300;
+      padding: 13px 16px;
+      outline: none;
+      transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7065' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,.12);
+    }
+    .field input.error,
+    .field select.error { border-color: var(--error); }
+    .field input::placeholder { color: var(--muted); }
+    .field select option { background: var(--card); }
+    .field-error { font-size: .78rem; color: var(--error); margin-top: -6px; display: none; }
+    .field-error.show { display: block; }
+
+    /* ── Submit btn ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Jost', sans-serif;
+      font-size: .88rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 16px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .25s var(--ease), transform .2s var(--ease);
+    }
+    .btn-submit:hover { background: var(--gold-lt); transform: translateY(-2px); }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ── Success toast ── */
+    .success-overlay {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      padding: 40px 0 10px;
+      animation: fadeIn .4s var(--ease);
+    }
+    .success-overlay.show { display: flex; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .success-icon {
+      width: 72px; height: 72px;
+      border: 2px solid var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .success-overlay h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--text);
+    }
+    .success-overlay p { color: var(--muted); max-width: 340px; line-height: 1.7; font-size: .9rem; }
+    .success-detail {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 28px;
+      width: 100%;
+      font-size: .9rem;
+      color: var(--text);
+      line-height: 2;
+    }
+    .success-detail strong { color: var(--gold); }
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      border-radius: var(--radius);
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 11px 28px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .25s var(--ease), color .25s var(--ease);
+    }
+    .btn-reset:hover { background: var(--gold); color: var(--black); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: .8rem;
+      letter-spacing: .06em;
+    }
+    footer span { color: var(--gold); }
+
+    /* ── Lang toggle ── */
+    .lang-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Jost', sans-serif;
+      font-size: .78rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-left: 20px;
+      transition: border-color .25s var(--ease), color .25s var(--ease);
+    }
+    .lang-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── RTL support ── */
+    [dir="rtl"] body { font-family: 'Noto Kufi Arabic', 'Jost', sans-serif; }
+    [dir="rtl"] nav a { margin-left: 0; margin-right: 28px; }
+    [dir="rtl"] .lang-btn { margin-left: 0; margin-right: 20px; }
+    [dir="rtl"] .field select {
+      background-position: left 16px center;
+      padding-right: 16px;
+      padding-left: 40px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .booking-wrap { padding: 36px 24px; }
+      nav { display: none; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="container">
+    <a href="#" class="logo">The Crown <span>Cut</span></a>
+    <nav>
+      <a href="#services" data-key="nav_services">Services</a>
+      <a href="#booking" data-key="nav_book">Book Now</a>
+    </nav>
+    <button class="lang-btn" id="langToggle" onclick="toggleLang()">عربي</button>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-tag" data-key="hero_tag">Est. 2015 · Premium Barbershop</div>
+    <h1 data-key="hero_h1">Crafted with<br><em>Precision</em></h1>
+    <p data-key="hero_p">Step into a space where tradition meets modern style. Every cut, every shave — a masterpiece.</p>
+    <a href="#booking" class="hero-cta" data-key="hero_cta">Reserve a Chair</a>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow" data-key="srv_eyebrow">What We Offer</p>
+      <h2 data-key="srv_h2">Our Services</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">✂️</div>
+        <h3 data-key="s1_title">Haircut</h3>
+        <p data-key="s1_desc">Precision cut tailored to your face shape and lifestyle. Includes wash, cut and styling.</p>
+        <div class="service-price">$30 <span data-key="per_session">/ session</span></div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🪒</div>
+        <h3 data-key="s2_title">Beard Trim</h3>
+        <p data-key="s2_desc">Define your edges with a hot towel, precision trim, and beard oil finish for a sharp look.</p>
+        <div class="service-price">$20 <span data-key="per_session">/ session</span></div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">👑</div>
+        <h3 data-key="s3_title">Full Service</h3>
+        <p data-key="s3_desc">The complete experience — haircut, beard trim, hot towel shave, and scalp massage.</p>
+        <div class="service-price">$55 <span data-key="per_session">/ session</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BOOKING ── -->
+<section id="booking">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow" data-key="book_eyebrow">Reserve Your Spot</p>
+      <h2 data-key="book_h2">Book an Appointment</h2>
+      <div class="divider"></div>
+    </div>
+
+    <div class="booking-wrap">
+
+      <!-- Form -->
+      <form id="bookingForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="name" data-key="lbl_name">Full Name</label>
+            <input type="text" id="name" placeholder="John Doe" autocomplete="name"/>
+            <span class="field-error" id="nameErr" data-key="err_name">Please enter your name.</span>
+          </div>
+          <div class="field">
+            <label for="phone" data-key="lbl_phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="+1 555 000 0000" autocomplete="tel"/>
+            <span class="field-error" id="phoneErr" data-key="err_phone">Enter a valid phone number.</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="service" data-key="lbl_service">Select Service</label>
+          <select id="service">
+            <option value="" data-key="opt_choose">— Choose a service —</option>
+            <option value="Haircut ($30)" data-key="opt_s1">✂️ Haircut — $30</option>
+            <option value="Beard Trim ($20)" data-key="opt_s2">🪒 Beard Trim — $20</option>
+            <option value="Full Service ($55)" data-key="opt_s3">👑 Full Service — $55</option>
+          </select>
+          <span class="field-error" id="serviceErr" data-key="err_service">Please select a service.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="date" data-key="lbl_date">Preferred Date</label>
+            <input type="date" id="date"/>
+            <span class="field-error" id="dateErr" data-key="err_date">Please pick a future date.</span>
+          </div>
+          <div class="field">
+            <label for="time" data-key="lbl_time">Preferred Time</label>
+            <select id="time">
+              <option value="" data-key="opt_time">— Choose time —</option>
+              <option>9:00 AM</option>
+              <option>10:00 AM</option>
+              <option>11:00 AM</option>
+              <option>12:00 PM</option>
+              <option>1:00 PM</option>
+              <option>2:00 PM</option>
+              <option>3:00 PM</option>
+              <option>4:00 PM</option>
+              <option>5:00 PM</option>
+            </select>
+            <span class="field-error" id="timeErr" data-key="err_time">Please choose a time slot.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" data-key="btn_submit">Confirm Booking</button>
+      </form>
+
+      <!-- Success state -->
+      <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">✓</div>
+        <h3 data-key="succ_title">You're All Set!</h3>
+        <p data-key="succ_desc">Your appointment has been confirmed. We'll see you soon — look sharp.</p>
+        <div class="success-detail" id="successDetail"></div>
+        <button class="btn-reset" data-key="btn_another" onclick="resetForm()">Book Another</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <p data-key="footer">© 2025 <span>The Crown Cut</span> · All rights reserved · Built for greatness</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Translations ── */
+  const translations = {
+    en: {
+      nav_services: 'Services', nav_book: 'Book Now',
+      hero_tag: 'Est. 2015 · Premium Barbershop',
+      hero_h1: 'Crafted with<br><em>Precision</em>',
+      hero_p: 'Step into a space where tradition meets modern style. Every cut, every shave — a masterpiece.',
+      hero_cta: 'Reserve a Chair',
+      srv_eyebrow: 'What We Offer', srv_h2: 'Our Services',
+      s1_title: 'Haircut', s1_desc: 'Precision cut tailored to your face shape and lifestyle. Includes wash, cut and styling.',
+      s2_title: 'Beard Trim', s2_desc: 'Define your edges with a hot towel, precision trim, and beard oil finish for a sharp look.',
+      s3_title: 'Full Service', s3_desc: 'The complete experience — haircut, beard trim, hot towel shave, and scalp massage.',
+      per_session: '/ session',
+      book_eyebrow: 'Reserve Your Spot', book_h2: 'Book an Appointment',
+      lbl_name: 'Full Name', lbl_phone: 'Phone Number', lbl_service: 'Select Service',
+      lbl_date: 'Preferred Date', lbl_time: 'Preferred Time',
+      opt_choose: '— Choose a service —', opt_s1: '✂️ Haircut — $30', opt_s2: '🪒 Beard Trim — $20', opt_s3: '👑 Full Service — $55',
+      opt_time: '— Choose time —',
+      err_name: 'Please enter your name.', err_phone: 'Enter a valid phone number.',
+      err_service: 'Please select a service.', err_date: 'Please pick a future date.', err_time: 'Please choose a time slot.',
+      btn_submit: 'Confirm Booking', btn_another: 'Book Another',
+      succ_title: "You're All Set!", succ_desc: "Your appointment has been confirmed. We'll see you soon — look sharp.",
+      footer: '© 2025 <span>The Crown Cut</span> · All rights reserved · Built for greatness',
+      lang_btn: 'عربي'
+    },
+    ar: {
+      nav_services: 'الخدمات', nav_book: 'احجز الآن',
+      hero_tag: 'منذ 2015 · صالون حلاقة فاخر',
+      hero_h1: 'بُنيت على<br><em>الإتقان</em>',
+      hero_p: 'ادخل إلى مساحة تجتمع فيها الأصالة مع الأناقة العصرية. كل قصة، كل حلاقة — تحفة فنية.',
+      hero_cta: 'احجز مقعدك',
+      srv_eyebrow: 'ما نقدمه', srv_h2: 'خدماتنا',
+      s1_title: 'قصة شعر', s1_desc: 'قصة دقيقة مصممة لشكل وجهك وأسلوبك. تشمل الغسيل والقص والتصفيف.',
+      s2_title: 'تهذيب اللحية', s2_desc: 'حدد ملامحك بمنشفة ساخنة وقص دقيق وزيت لحية للحصول على إطلالة حادة.',
+      s3_title: 'الخدمة الكاملة', s3_desc: 'التجربة الشاملة — قصة شعر وتهذيب لحية وحلاقة بالمنشفة الساخنة وتدليك فروة الرأس.',
+      per_session: '/ جلسة',
+      book_eyebrow: 'احجز مكانك', book_h2: 'حجز موعد',
+      lbl_name: 'الاسم الكامل', lbl_phone: 'رقم الهاتف', lbl_service: 'اختر الخدمة',
+      lbl_date: 'التاريخ المفضل', lbl_time: 'الوقت المفضل',
+      opt_choose: '— اختر خدمة —', opt_s1: '✂️ قصة شعر — $30', opt_s2: '🪒 تهذيب اللحية — $20', opt_s3: '👑 الخدمة الكاملة — $55',
+      opt_time: '— اختر الوقت —',
+      err_name: 'الرجاء إدخال اسمك.', err_phone: 'أدخل رقم هاتف صحيح.',
+      err_service: 'الرجاء اختيار خدمة.', err_date: 'الرجاء اختيار تاريخ مستقبلي.', err_time: 'الرجاء اختيار وقت.',
+      btn_submit: 'تأكيد الحجز', btn_another: 'حجز آخر',
+      succ_title: 'تم الحجز بنجاح!', succ_desc: 'تم تأكيد موعدك. نراك قريباً — كن في أبهى صورة.',
+      footer: '© 2025 <span>The Crown Cut</span> · جميع الحقوق محفوظة',
+      lang_btn: 'English'
+    }
+  };
+
+  let currentLang = 'en';
+
+  function applyLang(lang) {
+    const t = translations[lang];
+    const isAr = lang === 'ar';
+    document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', lang);
+    document.body.style.fontFamily = isAr ? "'Noto Kufi Arabic', sans-serif" : "'Jost', sans-serif";
+
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const key = el.dataset.key;
+      if (!t[key]) return;
+      el.innerHTML = t[key];
+    });
+
+    document.getElementById('langToggle').textContent = t.lang_btn;
+  }
+
+  function toggleLang() {
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    applyLang(currentLang);
+  }
+
+  /* ── Set min date to today ── */
+  const dateInput = document.getElementById('date');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.setAttribute('min', today);
+
+  /* ── Helpers ── */
+  function setError(inputId, errId, show) {
+    const el = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    el.classList.toggle('error', show);
+    err.classList.toggle('show', show);
+    return show;
+  }
+
+  function validatePhone(val) {
+    return /^[\+]?[\d\s\-\(\)]{7,15}$/.test(val.trim());
+  }
+
+  /* ── Validation ── */
+  function validate() {
+    const name    = document.getElementById('name').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const service = document.getElementById('service').value;
+    const date    = document.getElementById('date').value;
+    const time    = document.getElementById('time').value;
+
+    let hasError = false;
+    if (!name)                          hasError |= setError('name',    'nameErr',    true);
+    else                                           setError('name',    'nameErr',    false);
+
+    if (!validatePhone(phone))          hasError |= setError('phone',   'phoneErr',   true);
+    else                                           setError('phone',   'phoneErr',   false);
+
+    if (!service)                       hasError |= setError('service', 'serviceErr', true);
+    else                                           setError('service', 'serviceErr', false);
+
+    const pickedDate = new Date(date);
+    const todayDate  = new Date(today);
+    if (!date || pickedDate < todayDate) hasError |= setError('date',   'dateErr',    true);
+    else                                            setError('date',   'dateErr',    false);
+
+    if (!time)                          hasError |= setError('time',    'timeErr',    true);
+    else                                           setError('time',    'timeErr',    false);
+
+    return !hasError;
+  }
+
+  /* ── Submit ── */
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwBNNyFi1fHuJ5mbS24YDEOMknBCS_qmCTqO8GjWQYZeNswCNf_lbXTPfmANTxpDaqMYg/exec';
+
+  document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const name    = document.getElementById('name').value.trim();
+    const phone   = document.getElementById('phone').value.trim();
+    const service = document.getElementById('service').value;
+    const date    = document.getElementById('date').value;
+    const time    = document.getElementById('time').value;
+
+    // Format date nicely
+    const dateFormatted = new Date(date + 'T12:00').toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const labels = currentLang === 'ar'
+      ? { name: 'الاسم', service: 'الخدمة', date: 'التاريخ', time: 'الوقت' }
+      : { name: 'Name', service: 'Service', date: 'Date', time: 'Time' };
+
+    document.getElementById('successDetail').innerHTML =
+      `<strong>${labels.name}:</strong> ${name}<br>` +
+      `<strong>${labels.service}:</strong> ${service}<br>` +
+      `<strong>${labels.date}:</strong> ${dateFormatted}<br>` +
+      `<strong>${labels.time}:</strong> ${time}`;
+
+    // ── Loading state ──
+    const btn = this.querySelector('.btn-submit');
+    btn.disabled = true;
+    btn.textContent = currentLang === 'ar' ? 'جاري الحفظ...' : 'Saving...';
+
+    // ── Send to Google Sheets ──
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, service, date, time })
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = currentLang === 'ar' ? 'تأكيد الحجز' : 'Confirm Booking';
+      this.style.display = 'none';
+      document.getElementById('successOverlay').classList.add('show');
+    });
+  });
+
+  /* ── Reset ── */
+  function resetForm() {
+    document.getElementById('bookingForm').reset();
+    document.getElementById('bookingForm').style.display = '';
+    document.getElementById('successOverlay').classList.remove('show');
+    // Clear any error states
+    document.querySelectorAll('.field input, .field select').forEach(el => el.classList.remove('error'));
+    document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+  }
+
+  /* ── Live clear errors ── */
+  ['name','phone','service','date','time'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => el.classList.remove('error'));
+    el.addEventListener('change', () => el.classList.remove('error'));
+  });
+</script>
+</body>
+</html>
